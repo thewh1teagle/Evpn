@@ -70,7 +70,7 @@ class ExpressVpnApi:
 
     def _build_request(self, method, params = {}):
         return {
-            "jsonrpc": 2.0,
+            "jsonrpc": "2.0",
             "method": method,
             "params": params
         }
