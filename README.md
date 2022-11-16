@@ -15,4 +15,4 @@ with ExpressVpnApi as api:
 ```
 
 
-Control [express VPN](https://www.expressvpn.com/vpn-software) on your Windows machine using [Native messaging](https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/Native_messaging) protocol.
+Control [express VPN](https://www.expressvpn.com/vpn-software) on your machine using [Native messaging](https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/Native_messaging) protocol.
