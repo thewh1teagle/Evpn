@@ -32,8 +32,6 @@ class ExpressVpnApi:
         self._start_service()  
         for i in range(4):
             message = self.message_api.get_message(self.p.stdout)
-            if self.debug_prints:
-                print(message)
 
     def __enter__(self):
         return self
@@ -79,7 +77,10 @@ class ExpressVpnApi:
 
     def _get_message(self):
         self.p.stdout.flush()
-        return self.message_api.get_message(self.p.stdout)
+        message = self.message_api.get_message(self.p.stdout)
+        if (self.debug_prints):
+            print(f"Got message: {json.dumps(message)}")
+        return message
     
     def _send_message(self, message):
         if self.debug_prints:
