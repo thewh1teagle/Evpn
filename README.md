@@ -11,7 +11,7 @@ Basic Usage
 ```python
 from evpn import ExpressVpnApi
 with ExpressVpnApi as api:
-    ...
+    api.connect(country_code="US")
 ```
 
 
