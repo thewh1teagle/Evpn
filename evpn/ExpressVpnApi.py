@@ -12,8 +12,8 @@ class ExpressVpnApi:
     debug_prints: bool
     service_path = {
         "Windows": "C:\Program Files (x86)\ExpressVPN\services\ExpressVPN.BrowserHelper.exe",
-        "Linux": "/usr/bin/expressvpn-browser-help",
-        "Darwin": "/usr/bin/expressvpn-browser-help"
+        "Linux": "/usr/bin/expressvpn-browser-helper",
+        "Darwin": "/usr/bin/expressvpn-browser-helper"
     }
     program_path = {
         "Windows": "C:\Program Files (x86)\ExpressVPN\expressvpn-ui\ExpressVPN.exe",
@@ -87,6 +87,8 @@ class ExpressVpnApi:
         self.message_api.send_message(self.p.stdin, self.message_api.encode_message(message))
 
     def start_express_vpn(self):
+        if platform != "Windows":
+            raise NotImplementedError("You can use start_express_vpn method only in Windows.")
         path = self._program_path()
         Popen([path], start_new_session=True)
 
