@@ -85,6 +85,7 @@ class ExpressVpnApi:
     def _send_message(self, message):
         if self.debug_prints:
             print("Sending: " + json.dumps(message))
+        self.p.stdout.flush() # Flush output first
         self.message_api.send_message(self.p.stdin, self.message_api.encode_message(message))
 
     def start_express_vpn(self):
