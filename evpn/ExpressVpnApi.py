@@ -88,7 +88,6 @@ class ExpressVpnApi:
         }
 
     def _get_event(self):
-        self.p.stdout.seek(0, io.SEEK_END)
         while True:
             message = self.message_api.get_message(self.p.stdout)
             if (self.debug_prints):
@@ -98,7 +97,6 @@ class ExpressVpnApi:
                 return message
     
     def _get_response(self):
-        self.p.stdout.seek(0, io.SEEK_END)
         while True:
             message = self.message_api.get_message(self.p.stdout)
             if (self.debug_prints):
@@ -108,7 +106,6 @@ class ExpressVpnApi:
                 return message
 
     def _get_message(self):
-        self.p.stdout.seek(0, io.SEEK_END)
         while True:
             message = self.message_api.get_message(self.p.stdout)
             if (self.debug_prints):
