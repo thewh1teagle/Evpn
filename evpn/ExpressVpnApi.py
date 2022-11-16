@@ -132,8 +132,12 @@ class ExpressVpnApi:
 
     def is_connected(self):
         status = self.get_status()
-        info = status.get("data", {}).get("info", {})
-        return isinstance(info, dict) and info.get("state") == "connected"
+        data = status.get("data")
+        if isinstance(data, dict):
+            info = data.get("info", {})
+            return isinstance(info, dict) and info.get("state") == "connected"
+        else:
+            return False
         
 
     def disconnect(self):
