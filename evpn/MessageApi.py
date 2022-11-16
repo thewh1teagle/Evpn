@@ -1,6 +1,7 @@
 import struct
 import sys
 import json
+import os
 
 class MessageApi:
     # from https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/Native_messaging

@@ -1,10 +1,12 @@
 from .MessageApi import MessageApi
+from .Messages import Messages
 from subprocess import Popen, PIPE
 import pathlib
 import time
 import platform
 import psutil
 import json
+import io
 
 class ExpressVpnApi:
     extension_id = "fgddmllnllkalaagkghckoinaemmogpe"
@@ -27,7 +29,10 @@ class ExpressVpnApi:
         "Darwin": "ExpressVPN"
     }
 
-    def __init__(self, debug_prints = False) -> None: 
+    messages = Messages()
+
+    def __init__(self, debug_prints = False) -> None:
+        
         self.debug_prints = debug_prints
         self._start_service()
         connected = False
@@ -35,8 +40,7 @@ class ExpressVpnApi:
             print("Connecting To Daemon")
         while not connected:
             message = self._get_message()
-            if message.get("connected"):
-                connected = True
+            connected = message.get("connected")
             time.sleep(0.3)
         if self.debug_prints:
             print("Connected To Daemon")
@@ -83,12 +87,35 @@ class ExpressVpnApi:
             "params": params
         }
 
+    def _get_event(self):
+        self.p.stdout.seek(0, io.SEEK_END)
+        while True:
+            message = self.message_api.get_message(self.p.stdout)
+            if (self.debug_prints):
+                print(f"Got event: {json.dumps(message)}")
+            msg_type = message.get("type")
+            if msg_type and msg_type == "event":
+                return message
+    
+    def _get_response(self):
+        self.p.stdout.seek(0, io.SEEK_END)
+        while True:
+            message = self.message_api.get_message(self.p.stdout)
+            if (self.debug_prints):
+                print(f"Got message: {json.dumps(message)}")
+            msg_type = message.get("type")
+            if msg_type and msg_type == "method":
+                return message
+
     def _get_message(self):
-        self.p.stdout.flush()
-        message = self.message_api.get_message(self.p.stdout)
-        if (self.debug_prints):
-            print(f"Got message: {json.dumps(message)}")
-        return message
+        self.p.stdout.seek(0, io.SEEK_END)
+        while True:
+            message = self.message_api.get_message(self.p.stdout)
+            if (self.debug_prints):
+                print(f"Got message: {json.dumps(message)}")
+            msg_type = message.get("type")
+            if not msg_type or msg_type not in ("event"):
+                return message
     
     def _send_message(self, message):
         if self.debug_prints:
@@ -97,7 +124,7 @@ class ExpressVpnApi:
         self.message_api.send_message(self.p.stdin, self.message_api.encode_message(message))
 
     def start_express_vpn(self):
-        if platform != "Windows":
+        if platform.system() != "Windows":
             raise NotImplementedError("You can use start_express_vpn method only in Windows.")
         path = self._program_path()
         Popen([path], start_new_session=True)
@@ -107,19 +134,17 @@ class ExpressVpnApi:
         self.p = Popen([path, f"chrome-extension://{self.extension_id}/"], stdout=PIPE, stdin=PIPE, stderr=PIPE)
 
     def get_locations(self):
-        req = self._build_request("GetLocations")
+        req = self._build_request(self.messages.get_locations)
         self._send_message(req)
-        return self._get_message()
+        return self._get_response()
     
     def get_status(self):
-        req = self._build_request("GetStatus")
+        print("Getting status...")
+        req = self._build_request(self.messages.get_status)
         self._send_message(req)
-        return self._get_message()
-
-    def get_logs(self):
-        req = self._build_request("GetLogs")
-        self._send_message(req)
-        return self._get_message()
+        res = self._get_response()
+        print("Done")
+        return res
 
     def get_humanize_locations(self):
         locations = self.get_locations()
@@ -138,9 +163,8 @@ class ExpressVpnApi:
         if not any([name,country_code,country_id]):
             raise ValueError("You must provide either name, country_code, or country_id parameter to connect")
         params = {"country_code": country_code} if country_code else {"id": country_id or self.get_location_id(name)}
-        req = self._build_request("Connect", params)
+        req = self._build_request(self.messages.connect, params)
         self._send_message(req)
-        return self._get_message()
 
     def is_connected(self):
         status = self.get_status()
@@ -153,7 +177,7 @@ class ExpressVpnApi:
         
 
     def disconnect(self):
-        req = self._build_request("Disconnect")
+        req = self._build_request(self.messages.disconnect)
         self._send_message(req)
         return self._get_message()
     
