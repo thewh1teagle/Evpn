@@ -29,9 +29,7 @@ class ExpressVpnApi:
 
     def __init__(self, debug_prints = False) -> None: 
         self.debug_prints = debug_prints
-        self._start_service()  
-        for i in range(4):
-            message = self.message_api.get_message(self.p.stdout)
+        self._start_service()
 
     def __enter__(self):
         return self
