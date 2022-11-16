@@ -30,6 +30,16 @@ class ExpressVpnApi:
     def __init__(self, debug_prints = False) -> None: 
         self.debug_prints = debug_prints
         self._start_service()
+        connected = False
+        if self.debug_prints:
+            print("Connecting To Daemon")
+        while not connected:
+            message = self._get_message()
+            if message.get("connected"):
+                connected = True
+            time.sleep(0.3)
+        if self.debug_prints:
+            print("Connected To Daemon")
 
     def __enter__(self):
         return self
