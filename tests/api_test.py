@@ -12,10 +12,6 @@ def test_start_vpn():
     api.start_express_vpn()
 
 
-def test_umanize_locations():
-    res = api.get_humanize_locations()
-    assert isinstance(res, list)
-
 def test_locations():
     res = api.get_locations()
     assert isinstance(res, dict)
