@@ -1,9 +1,8 @@
 import struct
 import sys
 import json
-import os
 
-class MessageApi:
+class NativeMessaging:
     # from https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/Native_messaging
     @staticmethod
     def get_message(fd):

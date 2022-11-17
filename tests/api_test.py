@@ -21,8 +21,8 @@ def test_start_vpn():
         api.start_express_vpn()
 
 def test_connect():
-    api.connect(country_id="120")
-    time.sleep(5)
+    api.connect(country_code="US")
+    api.wait_for_connection(timeout=5)
     assert api.is_connected() == True
     
 def test_disconnect():
