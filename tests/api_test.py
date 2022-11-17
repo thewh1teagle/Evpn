@@ -36,3 +36,5 @@ def test_disconnect():
 def test_get_status():
     res = api.get_status()
     print(res)
+
+api.close()
