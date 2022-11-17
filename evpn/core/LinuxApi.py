@@ -31,12 +31,6 @@ class LinuxApi(AbcApi):
             self._messages = LinuxMessages()
         return self._messages
 
-    def connect(self, name = None, country_code = None, country_id = None):
-        if self.is_connected():
-            self.disconnect()
-            self.wait_for_disconnect(5)
-        super().connect(name, country_code, country_id)
-
     def get_locations(self):
         req = self._build_request(self.messages.get_locations)
         self._send_message(req)
@@ -59,3 +53,7 @@ class LinuxApi(AbcApi):
     def is_connected(self):
         status = self.get_status()
         return bool(status.get("info").get("connected"))
+    
+    def connect(self, id):
+        req = self._build_request(self.messages.connect, {"id": id, "change_connected_location": self.is_connected() })
+        self._send_message(req)

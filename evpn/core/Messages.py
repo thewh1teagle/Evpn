@@ -46,7 +46,3 @@ class WindowsMessages(AbcMessages):
     @property
     def disconnect(self):
         return "Disconnect"
-    
-    @property
-    def disconnect(self):
-        return "Disconnect"

@@ -12,8 +12,12 @@ pip3 install -U git+https://github.com/thewh1teagle/Evpn
 ##### Basic Usage
 ```python
 from evpn import ExpressVpnApi
+import random
+
 with ExpressVpnApi() as api:
-    api.connect(country_code="US")
+    locations = api.locations
+    loc = random.choice(locations)
+    api.connect(loc["id"])
 ```
 
 ##### Examples

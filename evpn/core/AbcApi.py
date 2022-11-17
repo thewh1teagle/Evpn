@@ -153,18 +153,19 @@ class AbcApi:
         raise TimeoutError
 
     
-    def connect(self, name = None, country_code = None, country_id = None):
-        if not any([name,country_code,country_id]):
-            raise ValueError("You must provide either name, country_code, or country_id parameter to connect")
-        params = {"country_code": country_code} if country_code else {"id": country_id or self.get_location_id(name)}
-        req = self._build_request(self.messages.connect, params)
-        self._send_message(req)
+    def connect(self, id):
+        raise NotImplementedError
     
     def disconnect(self):
         req = self._build_request(self.messages.disconnect)
         self._send_message(req)
         return self._get_message()
     
+    def reset_state(self):
+        req = self._build_request("XVPN.Reset")
+        self._send_message(req)
+        
+
     def close(self):
         time.sleep(1.5)
         self.p.kill()

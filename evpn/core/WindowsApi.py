@@ -59,3 +59,6 @@ class WindowsApi(AbcApi):
             return isinstance(info, dict) and info.get("state") == "connected"
         else:
             return False
+    def connect(self, id):
+        req = self._build_request(self.messages.connect, {"id": id })
+        self._send_message(req)
