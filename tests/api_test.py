@@ -37,4 +37,6 @@ def test_get_status():
     res = api.get_status()
     print(res)
 
-api.close()
+def pytest_sessionfinish(session, exitstatus):
+    """ whole test run finishes. """
+    api.close()
