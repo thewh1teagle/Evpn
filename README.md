@@ -12,7 +12,7 @@ pip3 install -U git+https://github.com/thewh1teagle/Evpn
 ##### Basic Usage
 ```python
 from evpn import ExpressVpnApi
-with ExpressVpnApi as api:
+with ExpressVpnApi() as api:
     api.connect(country_code="US")
 ```
 
