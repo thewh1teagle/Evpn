@@ -2,7 +2,7 @@ from .AbcApi import AbcApi
 from .Messages import WindowsMessages
 import pathlib
 import psutil
-from subprocess import Popen
+from subprocess import Popen, PIPE
 
 class WindowsApi(AbcApi):
     
@@ -16,7 +16,10 @@ class WindowsApi(AbcApi):
 
     @property
     def _service_path(self):
-        return pathlib.Path("C:\\Program Files (x86)\\ExpressVPN\\services\\ExpressVPN.BrowserHelper.exe")
+        return [
+            pathlib.Path("C:\\Program Files (x86)\\ExpressVPN\\services\\ExpressVPN.BrowserHelper.exe"),
+            pathlib.Path("C:\\Program Files (x86)\\ExpressVPN\\expressvpnd")
+        ]
     
     @property
     def locations(self):
@@ -30,6 +33,14 @@ class WindowsApi(AbcApi):
         if getattr(self, "_messages", None) is None:
             self._messages = WindowsMessages()
         return self._messages
+
+    def _start_service(self): 
+        paths = self._service_path
+        for path in paths:
+            if path.exists():
+                self.p = Popen([path, f"chrome-extension://{self.EXTENSION_ID}/"], stdout=PIPE, stdin=PIPE, stderr=PIPE)
+            return
+        raise Exception("Can't find browser service path of expressVPN")
 
     def get_locations(self):
         req = self._build_request(self.messages.get_locations)
