@@ -39,7 +39,7 @@ class WindowsApi(AbcApi):
         for path in paths:
             if path.exists():
                 self.p = Popen([path, f"chrome-extension://{self.EXTENSION_ID}/"], stdout=PIPE, stdin=PIPE, stderr=PIPE)
-            return
+                return
         raise Exception("Can't find browser service path of expressVPN")
 
     def get_locations(self):
