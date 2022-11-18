@@ -84,16 +84,6 @@ class AbcApi:
             "id": 200
         }
 
-    def _get_event(self):
-        while True:
-            message = self.MESSAGE_API.get_message(self.p.stdout)
-            
-            self._debug_print(f"Got event: {json.dumps(message)}")
-            msg_type = message.get("type")
-            if msg_type and msg_type == "event":
-                return message
-
-
     def _get_response(self):
         raise NotImplementedError
 
