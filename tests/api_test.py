@@ -30,7 +30,7 @@ def test_connect():
     
 def test_disconnect():
     api.disconnect()
-    time.sleep(2)
+    time.sleep(1)
     assert not api.is_connected()
 
 def test_get_status():

@@ -3,6 +3,7 @@ from .Messages import LinuxMessages
 import pathlib
 from subprocess import call
 import time
+import json
 
 class LinuxApi(AbcApi):
     
@@ -34,21 +35,24 @@ class LinuxApi(AbcApi):
     def get_locations(self):
         req = self._build_request(self.messages.get_locations)
         self._send_message(req)
-        return self._get_message()
+        return self._get_response()
     
     def express_vpn_running(self):
         stat = call(["systemctl", "is-active", "--quiet", "expressvpn.service"])
         return stat == 0
     
+    def _get_response(self):
+        while True:
+            message = self.MESSAGE_API.get_message(self.p.stdout)
+            self._debug_print(f"Got message: {json.dumps(message)}")
+            if message.get("type") in ("method","result") or not message.get("name"):
+                return message
+
     def get_status(self):
         self._debug_print("Getting status...")
         req = self._build_request(self.messages.get_status)
         self._send_message(req)
-        while True:
-                res = self._get_message()
-                if res.get("info"):
-                    return res
-                time.sleep(0.1)
+        return self._get_response()
 
     def is_connected(self):
         status = self.get_status()
@@ -57,3 +61,4 @@ class LinuxApi(AbcApi):
     def connect(self, id):
         req = self._build_request(self.messages.connect, {"id": id, "change_connected_location": self.is_connected() })
         self._send_message(req)
+        return self._get_response()

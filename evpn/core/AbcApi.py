@@ -3,6 +3,7 @@ from subprocess import Popen, PIPE
 import time
 import json
 from abc import abstractmethod, abstractproperty
+from tempfile import gettempdir
 
 class AbcApi:
 
@@ -73,13 +74,14 @@ class AbcApi:
 
     def _debug_print(self, data):
         if self.DEBUG:
-            print(data)
+            print(data[:100] + "...")
     
     def _build_request(self, method, params = {}):
         return {
             "jsonrpc": "2.0",
             "method": method,
-            "params": params
+            "params": params,
+            "id": 200
         }
 
     def _get_event(self):
@@ -93,20 +95,12 @@ class AbcApi:
 
 
     def _get_response(self):
-        while True:
-            message = self.MESSAGE_API.get_message(self.p.stdout)
-            self._debug_print(f"Got message: {json.dumps(message)}")
-            msg_type = message.get("type")
-            if msg_type and msg_type == "method":
-                return message
+        raise NotImplementedError
 
     def _get_message(self):
-        while True:
-            message = self.MESSAGE_API.get_message(self.p.stdout)
-            self._debug_print(f"Got message: {json.dumps(message)}")
-            msg_type = message.get("type")
-            if not msg_type or msg_type not in ("event"):
-                return message
+        message = self.MESSAGE_API.get_message(self.p.stdout)
+        self._debug_print(f"Got message: {json.dumps(message)}")
+        return message
 
     def _send_message(self, message):
         self._debug_print("Sending: " + json.dumps(message))
@@ -115,7 +109,7 @@ class AbcApi:
     
     def _start_service(self): 
         path = self._service_path.absolute()
-        self.p = Popen([path, f"chrome-extension://{self.EXTENSION_ID}/"], stdout=PIPE, stdin=PIPE, stderr=PIPE)
+        self.p = Popen([path, f"chrome-extension://{self.EXTENSION_ID}/"], stdout=PIPE, stdin=PIPE, stderr=PIPE, cwd=gettempdir())
     
     
     def get_location_id(self, name):
@@ -159,11 +153,12 @@ class AbcApi:
     def disconnect(self):
         req = self._build_request(self.messages.disconnect)
         self._send_message(req)
-        return self._get_message()
+        return self._get_response()
     
     def reset_state(self):
         req = self._build_request("XVPN.Reset")
         self._send_message(req)
+        return self._get_response()
         
 
     def close(self):
