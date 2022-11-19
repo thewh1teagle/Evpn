@@ -2,7 +2,6 @@ from .AbcApi import AbcApi
 from .Messages import LinuxMessages
 import pathlib
 from subprocess import call
-import time
 import json
 
 class LinuxApi(AbcApi):
@@ -36,7 +35,11 @@ class LinuxApi(AbcApi):
         req = self._build_request(self.messages.get_locations)
         self._send_message(req)
         return self._get_response()
-    
+
+    def start_express_vpn(self):
+        stat = call(["systemctl", "start", "--quiet", "expressvpn.service"])
+        return stat == 0
+
     def express_vpn_running(self):
         stat = call(["systemctl", "is-active", "--quiet", "expressvpn.service"])
         return stat == 0
