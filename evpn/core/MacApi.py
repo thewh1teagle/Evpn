@@ -1,8 +1,7 @@
 from .AbcApi import AbcApi
-from .Messages import LinuxMessages
+from .Messages import MacMessages
 import pathlib
-from subprocess import call
-import time
+from subprocess import call, Popen
 import json
 import psutil
 
@@ -30,7 +29,7 @@ class MacApi(AbcApi):
     @property
     def messages(self):
         if getattr(self, "_messages", None) is None:
-            self._messages = LinuxMessages()
+            self._messages = MacMessages()
         return self._messages
 
     def get_locations(self):
@@ -48,6 +47,10 @@ class MacApi(AbcApi):
             self._debug_print(f"Got message: {json.dumps(message)}")
             if message.get("type") in ("method","result") or not message.get("name"):
                 return message
+
+    def start_express_vpn(self):
+        path = self._program_path
+        Popen([path], start_new_session=True)
 
     def get_status(self):
         self._debug_print("Getting status...")

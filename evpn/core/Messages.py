@@ -63,3 +63,19 @@ class WindowsMessagesOld(AbcMessages):
     @property
     def disconnect(self):
         return "XVPN.Disconnect"
+
+
+class MacMessages(AbcMessages):
+    @property
+    def get_locations(self):
+        return "XVPN.GetLocations"
+    @property
+    def get_status(self):
+        return "XVPN.GetStatus"
+    @property
+    def connect(self):
+        return "XVPN.Connect"
+    
+    @property
+    def disconnect(self):
+        return "XVPN.Disconnect"
