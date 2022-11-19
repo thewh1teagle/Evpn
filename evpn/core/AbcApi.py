@@ -53,7 +53,7 @@ class AbcApi:
         raise NotImplementedError
 
     @abstractmethod
-    def start_express_vpn():
+    def start_express_vpn(self):
         raise NotImplementedError
     
     @abstractmethod
