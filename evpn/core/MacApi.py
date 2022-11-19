@@ -4,6 +4,7 @@ import pathlib
 from subprocess import call
 import time
 import json
+import psutil
 
 class MacApi(AbcApi):
     
@@ -38,7 +39,8 @@ class MacApi(AbcApi):
         return self._get_response()
     
     def express_vpn_running(self):
-        raise NotImplementedError
+        proc_names = [p.name() for p in psutil.process_iter()]
+        return any(p in proc_names for p in self._program_proc_name)
     
     def _get_response(self):
         while True:
