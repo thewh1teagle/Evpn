@@ -20,8 +20,7 @@ def test_locations():
     print(locations)
 
 def test_start_vpn():
-    if platform.system() == "Windows":
-        api.start_express_vpn()
+    api.start_express_vpn()
 
 def test_connect():
     api.connect("160")
