@@ -6,7 +6,7 @@ Control [express VPN](https://www.expressvpn.com/vpn-software) on your machine u
 
 ##### Setup
 ```shell
-pip3 install -U https://github.com/thewh1teagle/Evpn/archive/refs/tags/0.1.0.zip
+pip3 install -U https://github.com/thewh1teagle/Evpn/archive/refs/tags/1.0.0.zip
 ```
 
 ##### Basic Usage
