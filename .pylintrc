@@ -1,0 +1,7 @@
+[MESSAGES CONTROL]
+enable=
+    use-symbolic-message-instead,
+    useless-suppression,
+
+disable=
+    missing-docstring
