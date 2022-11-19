@@ -1,0 +1,15 @@
+[project]
+name = "evpn"
+description = "ExpressVPN python native API"
+version = "0.1.0"
+authors = [
+    { name = "thewh1teagle" }
+]
+dependencies = [
+    "psutil",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest",
+]
