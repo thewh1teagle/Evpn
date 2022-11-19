@@ -21,8 +21,11 @@ with ExpressVpnApi() as api:
 ```
 
 ##### Examples
-[random_location.py](https://github.com/thewh1teagle/Evpn/blob/main/examples/random_location.py)  
-[wait_for_start.py](https://github.com/thewh1teagle/Evpn/blob/main/examples/wait_for_start.py)
+[random_location.py](https://github.com/thewh1teagle/Evpn/blob/main/examples/random_location.py)
+
+##### About
+- This library is Cross Platform (*Windows*, *Linux*, *MacOS* are supported)
+- It talking to expressVPN daemon using native message protocol.
 
 ##### Contributing
 Every contribution is welcome. If you want to contribute but are unsure where to start, any open issues are fair game! 
