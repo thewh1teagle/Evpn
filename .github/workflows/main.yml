@@ -1,0 +1,5 @@
+- name: Publish package
+  on: release
+  uses: pypa/gh-action-pypi-publish@release/v1
+  with:
+    password: ${{ secrets.PYPI_API_TOKEN }}
