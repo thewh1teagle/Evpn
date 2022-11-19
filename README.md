@@ -1,5 +1,4 @@
 # Evpn
-
 ExpressVPN python native API
 
 Control [express VPN](https://www.expressvpn.com/vpn-software) on your machine using [Native messaging](https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/Native_messaging) protocol.
@@ -26,6 +25,15 @@ with ExpressVpnApi() as api:
 ##### About
 - This library is Cross Platform (*Windows*, *Linux*, *MacOS* are supported)
 - It talking to expressVPN daemon using native message protocol.
+
+##### Development
+1. Install dependencies
+`pip3 install .`
+2. Install dev dependencies
+`pip3 install .[dev]`
+4. Test your changes
+`python3 -m pytest .`
+5. Make new PR 🚀
 
 ##### Contributing
 Every contribution is welcome. If you want to contribute but are unsure where to start, any open issues are fair game! 

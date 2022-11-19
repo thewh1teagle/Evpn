@@ -1,7 +1,9 @@
 [project]
 name = "evpn"
 description = "ExpressVPN python native API"
-version = "0.1.0"
+readme = "README.md"
+requires-python = ">=3.7"
+version = "1.0.0"
 authors = [
     { name = "thewh1teagle" }
 ]
@@ -12,4 +14,9 @@ dependencies = [
 [project.optional-dependencies]
 dev = [
     "pytest",
+    "twine"
 ]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
