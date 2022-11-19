@@ -31,10 +31,12 @@ with ExpressVpnApi() as api:
 `pip3 install .`
 2. Install dev dependencies
 `pip3 install .[dev]`
+3. Lint it
+`pylint --rcfile=.pylintrc --recursive=y .`
 4. Test your changes
 `python3 -m pytest .`
 5. Make new PR 🚀
 
 ##### Contributing
-Every contribution is welcome. If you want to contribute but are unsure where to start, any open issues are fair game! 
+Every contribution is welcome. If you want to contribute but are unsure where to start, any open issues are fair game!
 

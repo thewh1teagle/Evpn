@@ -1,5 +1,5 @@
-from evpn import ExpressVpnApi
 import random
+from evpn import ExpressVpnApi
 
 with ExpressVpnApi() as api:
     locations = api.locations

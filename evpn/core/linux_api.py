@@ -1,15 +1,20 @@
-from .AbcApi import AbcApi
-from .Messages import LinuxMessages
 import pathlib
 from subprocess import call
 import json
+from .base_api import BaseApi
+from .messages import LinuxMessages
 
-class LinuxApi(AbcApi):
-    
+
+class LinuxApi(BaseApi):
+    """Class for controlling ExpressVPN daemon on Linux"""
+
+    _locations = None
+    _messages = LinuxMessages()
+
     @property
     def _program_proc_name(self):
         return "ExpressVPN"
-    
+
     @property
     def _program_path(self):
         return "/usr/bin/expressvpn"
@@ -17,12 +22,17 @@ class LinuxApi(AbcApi):
     @property
     def _service_path(self):
         return pathlib.Path("/usr/bin/expressvpn-browser-helper")
-    
+
     @property
     def locations(self):
         if getattr(self, "_locations", None) is None:
             locations = self.get_locations()
-            self._locations = [{"id": i["id"], "name": i["country"], "country_code": i["country_code"] } for i in locations["locations"]]
+            self._locations = [
+                {
+                    "id": i["id"],
+                    "name": i["country"],
+                    "country_code": i["country_code"]
+                } for i in locations["locations"]]
         return self._locations
 
     @property
@@ -41,14 +51,15 @@ class LinuxApi(AbcApi):
         return stat == 0
 
     def express_vpn_running(self):
-        stat = call(["systemctl", "is-active", "--quiet", "expressvpn.service"])
+        stat = call(["systemctl", "is-active",
+                    "--quiet", "expressvpn.service"])
         return stat == 0
-    
+
     def _get_response(self):
         while True:
-            message = self.MESSAGE_API.get_message(self.p.stdout)
+            message = self.MESSAGE_API.get_message(self.proc.stdout)
             self._debug_print(f"Got message: {json.dumps(message)}")
-            if message.get("type") in ("method","result") or not message.get("name"):
+            if message.get("type") in ("method", "result") or not message.get("name"):
                 return message
 
     def get_status(self):
@@ -60,8 +71,10 @@ class LinuxApi(AbcApi):
     def is_connected(self):
         status = self.get_status()
         return bool(status.get("info").get("connected"))
-    
-    def connect(self, id):
-        req = self._build_request(self.messages.connect, {"id": id, "change_connected_location": self.is_connected() })
+
+    def connect(self, country_id):
+        message = {"id": country_id,
+                   "change_connected_location": self.is_connected()}
+        req = self._build_request(self.messages.connect, message)
         self._send_message(req)
         return self._get_response()

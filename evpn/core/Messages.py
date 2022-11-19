@@ -1,81 +1,102 @@
-from abc import abstractproperty
+# pylint: disable=missing-class-docstring
+from abc import ABCMeta, abstractmethod
 
-class AbcMessages:
-    @abstractproperty
+
+class BaseMessages(metaclass=ABCMeta):
+    """
+    "Abstract class for storing messages code for native messaging daemon
+    """
+    @property
+    @abstractmethod
     def get_locations(self):
         raise NotImplementedError
 
-    @abstractproperty
+    @property
+    @abstractmethod
     def get_status(self):
         raise NotImplementedError
 
-    @abstractproperty
+    @property
+    @abstractmethod
     def connect(self):
         raise NotImplementedError
-    
-    @abstractproperty
+
+    @property
+    @abstractmethod
     def disconnect(self):
         raise NotImplementedError
 
-class LinuxMessages(AbcMessages):
+
+class LinuxMessages(BaseMessages):
     @property
     def get_locations(self):
         return "XVPN.GetLocations"
+
     @property
     def get_status(self):
         return "XVPN.GetStatus"
+
     @property
     def connect(self):
         return "XVPN.Connect"
-    
+
     @property
     def disconnect(self):
         return "XVPN.Disconnect"
 
-class WindowsMessages(AbcMessages):
+
+class WindowsMessages(BaseMessages):
     @property
     def get_locations(self):
         return "GetLocations"
+
     @property
     def get_status(self):
         return "GetStatus"
+
     @property
     def connect(self):
         return "Connect"
-    
+
     @property
     def disconnect(self):
         return "Disconnect"
 
 
-
-class WindowsMessagesOld(AbcMessages):
+class WindowsMessagesOld(BaseMessages):
+    """
+    Messages for old version of expressVPN
+    """
     @property
     def get_locations(self):
         return "XVPN.GetLocations"
+
     @property
     def get_status(self):
         return "XVPN.GetStatus"
+
     @property
     def connect(self):
         return "XVPN.Connect"
-    
+
     @property
     def disconnect(self):
         return "XVPN.Disconnect"
 
 
-class MacMessages(AbcMessages):
+class MacMessages(BaseMessages):
     @property
     def get_locations(self):
         return "XVPN.GetLocations"
+
     @property
     def get_status(self):
         return "XVPN.GetStatus"
+
     @property
     def connect(self):
         return "XVPN.Connect"
-    
+
     @property
     def disconnect(self):
         return "XVPN.Disconnect"

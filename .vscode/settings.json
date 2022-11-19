@@ -1,4 +1,12 @@
 {
+    "python.linting.pylintEnabled": true,
     "python.linting.enabled": true,
-    "python.linting.lintOnSave": true
+    "python.linting.lintOnSave": true,
+    "python.linting.pylintArgs": [
+        "--rcfile=.pylintrc",
+        "--recursive=y"
+    ],
+    "python.languageServer": "Pylance",
+    "files.trimTrailingWhitespace": true,
+    "editor.formatOnSave": true,
 }
