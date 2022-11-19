@@ -13,11 +13,11 @@ class MacApi(AbcApi):
     
     @property
     def _program_path(self):
-        return "/Applications/ExpressVPN.app/Contents/ExpressVPN"
+        return "/Applications/ExpressVPN.app/Contents/MacOS/ExpressVPN"
 
     @property
     def _service_path(self):
-        return pathlib.Path("/Applications/ExpressVPN.app/Contents/expressvpn-browser-helper")
+        return pathlib.Path("/Applications/ExpressVPN.app/Contents/MacOS/expressvpn-browser-helper")
     
     @property
     def locations(self):
