@@ -8,7 +8,7 @@ class WindowsApi(BaseApi):
     """Class for controlling ExpressVPN daemon on Windows"""
 
     def __init__(self, debug=False) -> None:
-        self._messages = MessagesV2() if self.is_old_version else MessagesV1()
+        self._messages = MessagesV2() if self._is_old_version else MessagesV1()
         super().__init__(debug)
 
     @property
@@ -39,8 +39,8 @@ class WindowsApi(BaseApi):
     @property
     @lru_cache()
     def locations(self):
-        locs = self.get_locations()
-        locs = locs["locations"] if self.is_old_version else locs["data"]["locations"]
+        locs = self._get_locations()
+        locs = locs["locations"] if self._is_old_version else locs["data"]["locations"]
         self._locations = [
             {
                 "id": i["id"],
@@ -52,13 +52,14 @@ class WindowsApi(BaseApi):
         return self._locations
 
     @property
-    def is_old_version(self):
+    def _is_old_version(self):
         # lowercase suffix = old version
         return self._service_path.name.endswith('expressvpn-browser-helper.exe')
 
+    @property
     def is_connected(self):
-        if self.is_old_version:
-            return super().is_connected()
+        if self._is_old_version:
+            return super().is_connected
         status = self.get_status()
         data = status.get("data")
         if isinstance(data, dict):
@@ -67,6 +68,6 @@ class WindowsApi(BaseApi):
         return False
 
     def connect(self, country_id):
-        if self.is_old_version:
+        if self._is_old_version:
             super().connect(country_id)
         return self._call(self._messages.connect, {"id": country_id})

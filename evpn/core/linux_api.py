@@ -22,7 +22,7 @@ class LinuxApi(BaseApi):
     @property
     @lru_cache
     def locations(self):
-        locations = self.get_locations()
+        locations = self._get_locations()
         return [
             {
                 "id": i["id"],
@@ -35,6 +35,7 @@ class LinuxApi(BaseApi):
         stat = call(["systemctl", "start", "--quiet", "expressvpn.service"])
         return stat == 0
 
+    @property
     def express_vpn_running(self):
         stat = call(["systemctl", "is-active",
                     "--quiet", "expressvpn.service"])

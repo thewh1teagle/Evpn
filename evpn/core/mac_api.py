@@ -21,7 +21,7 @@ class MacApi(BaseApi):
     @property
     @lru_cache()
     def locations(self):
-        locations = self.get_locations()
+        locations = self._get_locations()
         locations = locations["locations"]
         return [
             {

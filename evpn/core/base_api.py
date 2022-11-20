@@ -20,7 +20,7 @@ class BaseApi:
     def __init__(self, debug=False) -> None:
         self._messages = MessagesV2
         self._locations = None
-        self.debug = debug
+        self._debug = debug
         self._start_service()
         self._debug_print("Connecting To Daemon")
         self._wait_for_daemon(timeout=5)
@@ -43,7 +43,7 @@ class BaseApi:
             raise TimeoutError("Can't connect to ExpressVPN daemon")
 
     def _debug_print(self, data):
-        if self.debug:
+        if self._debug:
             print(data[:100] + "...")
 
     def _build_request(self, method, params=None):
@@ -55,19 +55,19 @@ class BaseApi:
         }
 
     def _get_message(self):
-        message = self.MESSAGE_API.get_message(self.proc.stdout)
+        message = self.MESSAGE_API.get_message(self._proc.stdout)
         self._debug_print(f"Got message: {json.dumps(message)}")
         return message
 
     def _send_message(self, message):
         self._debug_print("Sending: " + json.dumps(message))
-        self.proc.stdout.flush()  # Flush output first
+        self._proc.stdout.flush()  # Flush output first
         self.MESSAGE_API.send_message(
-            self.proc.stdin, self.MESSAGE_API.encode_message(message))
+            self._proc.stdin, self.MESSAGE_API.encode_message(message))
 
     def _get_response(self):
         while True:
-            message = self.MESSAGE_API.get_message(self.proc.stdout)
+            message = self.MESSAGE_API.get_message(self._proc.stdout)
             self._debug_print(f"Got message: {json.dumps(message)}")
             if message.get("type") in ("method", "result") or not message.get("name"):
                 return message
@@ -81,12 +81,30 @@ class BaseApi:
     def _start_service(self):
         path = self._service_path.absolute()
         # pylint: disable-next=consider-using-with
-        self.proc = Popen([
+        self._proc = Popen([
             path,
             f"chrome-extension://{self.EXTENSION_ID}/"],
             stdout=PIPE, stdin=PIPE, stderr=PIPE,
             cwd=gettempdir()
         )
+
+    def _get_locations(self):
+        return self._call(self._messages.get_locations)
+
+    @property
+    @abstractmethod
+    def _program_proc_name(self):
+        raise NotImplementedError
+
+    @property
+    @abstractmethod
+    def _program_path(self):
+        raise NotImplementedError
+
+    @property
+    @abstractmethod
+    def _service_path(self):
+        raise NotImplementedError
 
     def start_express_vpn(self):
         path = self._program_path
@@ -94,10 +112,12 @@ class BaseApi:
         # pylint: disable=consider-using-with
         Popen([path], start_new_session=True)
 
+    @property
     def express_vpn_running(self):
         proc_names = [p.name() for p in psutil.process_iter()]
         return any(p in proc_names for p in self._program_proc_name)
 
+    @property
     def is_connected(self):
         status = self.get_status()
         return bool(status.get("info").get("connected"))
@@ -121,7 +141,7 @@ class BaseApi:
         """
         start = time.time()
         while time.time() - start <= timeout:
-            if self.is_connected():
+            if self.is_connected:
                 return
             time.sleep(0.3)
         raise TimeoutError
@@ -134,7 +154,7 @@ class BaseApi:
         """
         start = time.time()
         while time.time() - start <= timeout:
-            if not self.is_connected():
+            if not self.is_connected:
                 return
             time.sleep(0.3)
         raise TimeoutError
@@ -145,34 +165,20 @@ class BaseApi:
     def get_status(self):
         return self._call(self._messages.get_status)
 
-    def get_locations(self):
-        return self._call(self._messages.get_locations)
-
     def connect(self, country_id):
         params = {"id": country_id,
-                  "change_connected_location": self.is_connected()}
+                  "change_connected_location": self.is_connected}
         return self._call(self._messages.connect, params)
 
     def close(self):
         time.sleep(1.5)
-        self.proc.kill()
-
-    @property
-    @abstractmethod
-    def _program_proc_name(self):
-        raise NotImplementedError
-
-    @property
-    @abstractmethod
-    def _program_path(self):
-        raise NotImplementedError
-
-    @property
-    @abstractmethod
-    def _service_path(self):
-        raise NotImplementedError
+        self._proc.kill()
 
     @property
     @abstractmethod
     def locations(self):
+        """
+        Get list of locations
+        fields: name, ID, country_code
+        """
         raise NotImplementedError
