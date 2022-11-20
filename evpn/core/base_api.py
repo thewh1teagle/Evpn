@@ -1,27 +1,36 @@
-from subprocess import Popen, PIPE
+from subprocess import Popen, PIPE, call
 from abc import abstractmethod
 import time
 import json
 from tempfile import gettempdir
+import psutil
 from .native_messaging import NativeMessaging
-from .messages import AbcMessages
+from .messages import MessagesV2
 
 
 class BaseApi:
-    """Abstract Class For Daemon API """
+    """
+        Class For Daemon API
+        Platform specific methods are abstract
+    """
 
     EXTENSION_ID = "fgddmllnllkalaagkghckoinaemmogpe"
     MESSAGE_API = NativeMessaging()
-    debug: bool
-    messages: AbcMessages
 
     def __init__(self, debug=False) -> None:
+        self._messages = MessagesV2
         self._locations = None
         self.debug = debug
         self._start_service()
         self._debug_print("Connecting To Daemon")
         self._wait_for_daemon(timeout=5)
         self._debug_print("Connected To Daemon")
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, _type, value, traceback):
+        self.close()
 
     def _wait_for_daemon(self, timeout):
         connected = False
@@ -32,57 +41,6 @@ class BaseApi:
             time.sleep(0.3)
         if not connected:
             raise TimeoutError("Can't connect to ExpressVPN daemon")
-
-    def __enter__(self):
-        return self
-
-    def __exit__(self, _type, value, traceback):
-        self.close()
-
-    @property
-    @abstractmethod
-    def messages(self):
-        raise NotImplementedError
-
-    @property
-    @abstractmethod
-    def _program_proc_name(self):
-        raise NotImplementedError
-
-    @property
-    @abstractmethod
-    def _program_path(self):
-        raise NotImplementedError
-
-    @property
-    @abstractmethod
-    def _service_path(self):
-        raise NotImplementedError
-
-    @property
-    @abstractmethod
-    def locations(self):
-        raise NotImplementedError
-
-    @abstractmethod
-    def get_locations(self):
-        raise NotImplementedError
-
-    @abstractmethod
-    def start_express_vpn(self):
-        raise NotImplementedError
-
-    @abstractmethod
-    def express_vpn_running(self):
-        raise NotImplementedError
-
-    @abstractmethod
-    def get_status(self):
-        raise NotImplementedError
-
-    @abstractmethod
-    def is_connected(self):
-        raise NotImplementedError
 
     def _debug_print(self, data):
         if self.debug:
@@ -96,9 +54,6 @@ class BaseApi:
             "id": 200
         }
 
-    def _get_response(self):
-        raise NotImplementedError
-
     def _get_message(self):
         message = self.MESSAGE_API.get_message(self.proc.stdout)
         self._debug_print(f"Got message: {json.dumps(message)}")
@@ -110,17 +65,40 @@ class BaseApi:
         self.MESSAGE_API.send_message(
             self.proc.stdin, self.MESSAGE_API.encode_message(message))
 
-    def some_method(self):
-        pass
+    def _get_response(self):
+        while True:
+            message = self.MESSAGE_API.get_message(self.proc.stdout)
+            self._debug_print(f"Got message: {json.dumps(message)}")
+            if message.get("type") in ("method", "result") or not message.get("name"):
+                return message
+
+    def _call(self, message: str, params=None):
+        """ Send native message and return response """
+        req = self._build_request(message, params)
+        self._send_message(req)
+        return self._get_response()
 
     def _start_service(self):
         path = self._service_path.absolute()
+        # pylint: disable-next=consider-using-with
         self.proc = Popen([
             path,
             f"chrome-extension://{self.EXTENSION_ID}/"],
             stdout=PIPE, stdin=PIPE, stderr=PIPE,
             cwd=gettempdir()
         )
+
+    def start_express_vpn(self):
+        path = self._program_path
+        call([path], start_new_session=True)
+
+    def express_vpn_running(self):
+        proc_names = [p.name() for p in psutil.process_iter()]
+        return any(p in proc_names for p in self._program_proc_name)
+
+    def is_connected(self):
+        status = self.get_status()
+        return bool(status.get("info").get("connected"))
 
     def get_location_id(self, name):
         found = next(
@@ -159,19 +137,40 @@ class BaseApi:
             time.sleep(0.3)
         raise TimeoutError
 
-    def connect(self, country_id):
-        raise NotImplementedError
-
     def disconnect(self):
-        req = self._build_request(self.messages.disconnect)
-        self._send_message(req)
-        return self._get_response()
+        return self._call(self._messages.disconnect)
 
-    def reset_state(self):
-        req = self._build_request("XVPN.Reset")
-        self._send_message(req)
-        return self._get_response()
+    def get_status(self):
+        return self._call(self._messages.get_status)
+
+    def get_locations(self):
+        return self._call(self._messages.get_locations)
+
+    def connect(self, country_id):
+        params = {"id": country_id,
+                  "change_connected_location": self.is_connected()}
+        return self._call(self._messages.connect, params)
 
     def close(self):
         time.sleep(1.5)
         self.proc.kill()
+
+    @property
+    @abstractmethod
+    def _program_proc_name(self):
+        raise NotImplementedError
+
+    @property
+    @abstractmethod
+    def _program_path(self):
+        raise NotImplementedError
+
+    @property
+    @abstractmethod
+    def _service_path(self):
+        raise NotImplementedError
+
+    @property
+    @abstractmethod
+    def locations(self):
+        raise NotImplementedError
