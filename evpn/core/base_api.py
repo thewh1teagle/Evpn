@@ -1,4 +1,4 @@
-from subprocess import Popen, PIPE, call
+from subprocess import Popen, PIPE
 from abc import abstractmethod
 import time
 import json
@@ -90,7 +90,9 @@ class BaseApi:
 
     def start_express_vpn(self):
         path = self._program_path
-        call([path], start_new_session=True)
+        # Since in some platforms this process started in attached mode, we keep it running...
+        # pylint: disable=consider-using-with
+        Popen([path], start_new_session=True)
 
     def express_vpn_running(self):
         proc_names = [p.name() for p in psutil.process_iter()]

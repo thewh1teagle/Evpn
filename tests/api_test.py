@@ -10,6 +10,10 @@ sys.path.insert(0, LIB_PATH)
 api = ExpressVpnApi(debug=True)
 
 
+def test_start_vpn():
+    api.start_express_vpn()
+
+
 def test_connect():
     api.connect("160")
     api.wait_for_connection(timeout=60)
@@ -24,10 +28,6 @@ def test_is_running():
 def test_locations():
     locations = api.locations
     print(locations)
-
-
-def test_start_vpn():
-    api.start_express_vpn()
 
 
 def test_disconnect():
