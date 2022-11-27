@@ -8,8 +8,8 @@ class WindowsApi(BaseApi):
     """Class for controlling ExpressVPN daemon on Windows"""
 
     def __init__(self, debug=False) -> None:
-        self._messages = MessagesV2() if self._is_old_version else MessagesV1()
         super().__init__(debug)
+        self._messages = MessagesV2() if self._is_old_version else MessagesV1()
 
     @property
     def _program_proc_name(self):
