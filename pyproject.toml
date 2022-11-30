@@ -3,7 +3,7 @@ name = "evpn"
 description = "ExpressVPN python native API"
 readme = "README.md"
 requires-python = ">=3.7"
-version = "1.0.1"
+version = "1.0.0"
 authors = [
     { name = "thewh1teagle" }
 ]
