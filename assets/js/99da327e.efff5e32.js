@@ -1,1 +1,0 @@
-"use strict";(self.webpackChunkdocs=self.webpackChunkdocs||[]).push([[974],{772:e=>{e.exports=JSON.parse('{"title":"Get started","description":"5 minutes to learn the usage of evpn.","slug":"/category/get-started","permalink":"/evpn/docs/category/get-started","navigation":{"next":{"title":"Install","permalink":"/evpn/docs/get-started/install"}}}')}}]);
