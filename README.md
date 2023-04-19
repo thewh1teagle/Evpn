@@ -20,7 +20,7 @@ with ExpressVpnApi() as api:
 ```
 
 ##### Examples
-[random_location.py](https://github.com/thewh1teagle/Evpn/blob/main/examples/random_location.py)
+[random_location.py](https://github.com/thewh1teagle/evpn/blob/main/examples/random_location.py)
 
 ##### About
 - This library is Cross Platform (*Windows*, *Linux*, *MacOS* are supported)
