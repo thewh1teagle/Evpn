@@ -2,7 +2,7 @@ from pathlib import Path
 from functools import lru_cache
 from .base_api import BaseApi
 from .messages import MessagesV1, MessagesV2
-
+from .exceptions import ExpressVPNMissingException
 
 class WindowsApi(BaseApi):
     """Class for controlling ExpressVPN daemon on Windows"""
@@ -34,7 +34,9 @@ class WindowsApi(BaseApi):
         for path in paths:
             if path.exists():
                 return path
-        raise Exception("Can't find browser service path of expressVPN")
+        raise ExpressVPNMissingException("Can't find browser service path of expressVPN\n \
+                                         Have you installed ExpressVPN?\n \
+                                         Download at https://expressvpn.com/latest")
 
     @property
     @lru_cache()
