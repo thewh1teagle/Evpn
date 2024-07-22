@@ -3,6 +3,7 @@ sidebar_position: 1
 ---
 
 # Connect Random location
+
 connect random location
 
 Create a file `change_location.py`:
