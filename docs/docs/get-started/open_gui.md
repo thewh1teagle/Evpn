@@ -14,5 +14,4 @@ from evpn import ExpressVpnApi
 
 with ExpressVpnApi() as api:
     api.start_express_vpn() # will open the gui program in Windows
-test
 ```
