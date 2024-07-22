@@ -3,6 +3,7 @@ sidebar_position: 2
 ---
 
 # Disconnect
+
 Disconnect from the vpn
 
 Create a file `change_location.py`:
